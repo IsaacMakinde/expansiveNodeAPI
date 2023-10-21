@@ -1,9 +1,9 @@
 const countryRestApi = process.env.REST_COUNTRIES_API_URL;
 const axios = require("axios");
-const Country = require("../models/Country");
+const Country = require("../models/countryModel");
 
 countryInfo = {
-  getAll: (res) => {
+  getAll: (req, res, next) => {
     axios
       .get(countryRestApi + "/all")
       .then((response) => {
@@ -11,12 +11,11 @@ countryInfo = {
         res.json(countries);
       })
       .catch((error) => {
-        res.status(500).send("Error fetching country list");
-        throw error;
+        next(error);
       });
   },
 
-  getCountryByName: (req, res) => {
+  getCountryByName: (req, res, next) => {
     axios
       .get(countryRestApi + "/name/" + req.params.name)
       .then((response) => {
@@ -24,12 +23,12 @@ countryInfo = {
         res.json(countryDetails);
       })
       .catch((error) => {
-        res.status(500).send("Error fetching country details based on name");
+        next(error);
         throw error;
       });
   },
 
-  getCountryByCode: (req, res) => {
+  getCountryByCode: (req, res, next) => {
     axios
       .get(countryRestApi + "/alpha?codes=" + req.params.code)
       .then((response) => {
@@ -37,22 +36,35 @@ countryInfo = {
         res.json(countryDetails);
       })
       .catch((error) => {
-        res.status(500).send("Error fetching country details based on code");
-        throw error;
+        // res.status(500).send("Error fetching country details based on code");
+        // throw error;
+        next(error);
       });
   },
-  getCountryByLanguage: (req, res) => {
+
+  getCountryByLanguage: (req, res, next) => {
+    const language = req.params.language;
+
+    // Check if the language parameter is missing or empty
+    if (!language) {
+      return res.status(400).json({ error: "Language parameter is required." });
+    }
+
     axios
       .get(countryRestApi + "/lang/" + req.params.language)
       .then((response) => {
-        const countries = response.data.map((country) => new Country(country));
+        const responseData = response.data;
+        const countries = responseData.map((country) => new Country(country));
         res.json(countries);
       })
       .catch((error) => {
-        res
-          .status(500)
-          .send("Error fetching country details based on language");
-        throw error;
+        if (axios.isAxiosError(error)) {
+          // Handle Axios errors
+
+          console.log("why");
+
+          next(error);
+        }
       });
   },
 };
