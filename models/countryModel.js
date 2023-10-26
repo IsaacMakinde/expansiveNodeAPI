@@ -7,6 +7,7 @@ class Country {
     this.languages = data.languages;
     this.population = data.population;
     this.flags = data.flags;
+    this.coatOfArms = data.coatOfArms;
     this.independent = data.independent;
     this.currencies = data.currencies;
     this.cca2 = data.cca2;

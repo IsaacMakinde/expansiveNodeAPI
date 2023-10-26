@@ -30,8 +30,8 @@ router.get("/name/:name?", async (req, res, next) => {
   axios
     .get(countryRestApi + "/name/" + req.params.name)
     .then((response) => {
-      const countryDetails = new Country(response.data[0]);
-      res.json(countryDetails);
+      const countries = response.data.map((country) => new Country(country));
+      res.json(countries);
     })
     .catch((error) => {
       next(error);
