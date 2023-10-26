@@ -5,12 +5,7 @@ const errorMiddleware = require("./middleware/errorMiddleware");
 const userRoute = require("./controllers/countriesController");
 
 const app = express();
-app.use(
-  cors({
-    origin: "http://127.0.0.1:3000",
-    // Add other CORS options as needed
-  })
-);
+app.use(cors("*"));
 
 app.use("/countries", userRoute);
 app.use(errorMiddleware);
